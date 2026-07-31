@@ -6,3 +6,4 @@ python-multipart
 reportlab
 PyPDF2
 httpx
+dotenv
