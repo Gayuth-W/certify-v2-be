@@ -1,0 +1,206 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: BE
+meta:
+  id: wrk_c5c8ba90b3df479cb1a347fbc42c3eeb
+  created: 1775149331971
+  modified: 1775149331971
+  description: ""
+collection:
+  - url: https://accounts.sliitmozilla.org/api/login
+    name: login
+    meta:
+      id: req_029e1130cfa348b584a2b4c2d6b2d25b
+      created: 1775149709956
+      modified: 1775151519806
+      isPrivate: false
+      description: ""
+      sortKey: -1775150702578
+    method: POST
+    body:
+      mimeType: application/json
+      text: '{   "email": "heshanthenura@gmail.com",   "password": "2003213Ht" }'
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/12.3.1
+      - name: Cookie
+        value: =;
+          refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Nzc3MDE3ODMsImlhdCI6MTc3NTEwOTc4MywiaWQiOiI3ZWY2MjRlMi03OTBjLTQ2OGMtOTFjNi1iZjk3ZDcyMzI2MjAifQ.WGTa5hYL0WEDxIqeE-rF4yGI05r9ngUt4cWhKvEiKwc
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - name: admin
+    meta:
+      id: fld_50b50175f3d04d3485b6bc1522b5f71b
+      created: 1775151530713
+      modified: 1775151532785
+      sortKey: -1775150702528
+      description: ""
+    children:
+      - url: "{{ _.url }}/admin/add/template"
+        name: add template
+        meta:
+          id: req_e02e83f3cb6f431d840faaf88873b573
+          created: 1775150702478
+          modified: 1775232915321
+          isPrivate: false
+          description: ""
+          sortKey: -1775151539744
+        method: POST
+        body:
+          mimeType: multipart/form-data
+          params:
+            - name: template
+              value: ""
+              description: ""
+              disabled: false
+              fileName: C:\Users\hesha\Downloads\Group 1 (2).pdf
+              type: file
+            - name: font_size
+              value: "40"
+              description: ""
+              disabled: false
+            - name: font_color
+              value: "#000000"
+              description: ""
+              disabled: false
+            - name: name_x_pos
+              value: "450"
+              description: ""
+              disabled: false
+            - name: name_y_pos
+              value: "300"
+              description: ""
+              disabled: false
+            - name: template_name
+              value: test
+              description: ""
+              disabled: false
+            - name: template_for
+              value: test
+              description: ""
+              disabled: false
+            - name: event_name
+              value: test
+              description: ""
+              disabled: false
+            - name: issuer_name
+              value: test
+              description: ""
+              disabled: false
+            - name: notes
+              value: test
+              description: ""
+              disabled: false
+        headers:
+          - name: Content-Type
+            value: multipart/form-data
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.url }}/admin/add/certificate"
+        name: add certificate
+        meta:
+          id: req_d84a89024d63439f9b5763bc0fe4be32
+          created: 1775155210791
+          modified: 1775232926697
+          isPrivate: false
+          description: ""
+          sortKey: -1775151121161
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "template_id": 7,
+              "recipient_name": "John Doe",
+              "recipient_email": "john@example.com",
+              "issue_reason": "participation",
+              "event_name": "AI Workshop 2026",
+              "event_date": "2026-04-03",
+              "event_location": "Colombo",
+              "issuer_name": "Certify Academy",
+              "course_name": "Prompt Engineering",
+              "notes": "Completed successfully"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.url }}/certificate/E189A0B95472/preview"
+        name: get certificate
+        meta:
+          id: req_7ee2281ff0a14e8785a677ff1df23c6f
+          created: 1775158175591
+          modified: 1775205785395
+          isPrivate: false
+          description: ""
+          sortKey: -1775150911869.5
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_7a4054dd8c0deefb4a04961f0ae43d88aa778bf9
+    created: 1775149332015
+    modified: 1775149733781
+  cookies:
+    - id: f95bb7ee-7f96-427f-99dd-bf84bf754c05
+      key: refreshToken
+      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Nzc3NDE3MzgsImlhdCI6MTc3NTE0OTczOCwiaWQiOiI3ZWY2MjRlMi03OTBjLTQ2OGMtOTFjNi1iZjk3ZDcyMzI2MjAifQ.ZDm14jC_P-p1KK9reOMCKv44BdR3JArjX7t7UU0oN4s
+      domain: accounts.sliitmozilla.org
+      path: /api
+      secure: false
+      httpOnly: true
+      hostOnly: true
+      pathIsDefault: true
+environments:
+  name: Base Environment
+  meta:
+    id: env_7a4054dd8c0deefb4a04961f0ae43d88aa778bf9
+    created: 1775149331998
+    modified: 1775232782655
+    isPrivate: false
+  data:
+    token: "{% response 'body', 'req_029e1130cfa348b584a2b4c2d6b2d25b',
+      'b64::JC5kYXRhLnRva2Vu::46b', 'never', 60 %}"
+    url: https://certify-v2-be.vercel.app/api
