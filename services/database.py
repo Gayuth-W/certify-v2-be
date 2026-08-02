@@ -81,3 +81,13 @@ def get_template_by_id(template_id: int) -> dict:
 		raise ValueError("Template not found")
 
 	return response.data[0]
+
+
+def get_all_templates() -> list[dict]:
+	client = get_supabase_client()
+	response = client.table("templates").select("*").execute()
+
+	if not response.data:
+		return []
+
+	return response.data
