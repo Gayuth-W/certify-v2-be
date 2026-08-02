@@ -66,8 +66,11 @@ def admin_get_templates():
     }
 
 @router.get("/certificates")
-def admin_get_certificates():
-    certificates = get_all_certificates()
+def admin_get_certificates(
+    template_id: int | None = None,
+    recipient_email: str | None = None
+):
+    certificates = get_all_certificates(template_id, recipient_email)
     return {
         "ok": True,
         "message": "Certificates fetched successfully",

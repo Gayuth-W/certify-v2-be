@@ -92,9 +92,17 @@ def get_all_templates() -> list[dict]:
 
 	return response.data
 
-def get_all_certificates() -> list[dict]:
+def get_all_certificates(template_id: int | None = None, recipient_email: str | None = None) -> list[dict]:
 	client = get_supabase_client()
-	response = client.table("certificates").select("id, certificate_id, created_at, template_id, recipient_name, recipient_email, issuer_name").execute()
+	query = client.table("certificates").select("id, certificate_id, created_at, template_id, recipient_name, recipient_email, issuer_name")
+
+	if template_id is not None:
+		query = query.eq("template_id", template_id)
+
+	if recipient_email is not None:
+		query = query.eq("recipient_email", recipient_email)
+
+	response = query.execute()
 
 	if not response.data:
 		return []
