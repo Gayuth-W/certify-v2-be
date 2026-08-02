@@ -91,3 +91,12 @@ def get_all_templates() -> list[dict]:
 		return []
 
 	return response.data
+
+def get_all_certificates() -> list[dict]:
+	client = get_supabase_client()
+	response = client.table("certificates").select("id, certificate_id, created_at, template_id, recipient_name, recipient_email, issuer_name").execute()
+
+	if not response.data:
+		return []
+
+	return response.data

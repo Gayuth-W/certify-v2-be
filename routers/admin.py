@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, File, Form, UploadFile
 from models.models import AddCertificateRequestModel, AddTemplateRequestModel
-from services.database import add_certificate, add_template, get_all_templates
+from services.database import add_certificate, add_template, get_all_templates, get_all_certificates
 from services.storage import upload_template
 
 router = APIRouter(
@@ -63,4 +63,13 @@ def admin_get_templates():
         "ok": True,
         "message": "Templates fetched successfully",
         "templates": templates,
+    }
+
+@router.get("/certificates")
+def admin_get_certificates():
+    certificates = get_all_certificates()
+    return {
+        "ok": True,
+        "message": "Certificates fetched successfully",
+        "certificates": certificates,
     }
