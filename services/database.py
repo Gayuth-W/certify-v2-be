@@ -81,3 +81,30 @@ def get_template_by_id(template_id: int) -> dict:
 		raise ValueError("Template not found")
 
 	return response.data[0]
+
+
+def get_all_templates() -> list[dict]:
+	client = get_supabase_client()
+	response = client.table("templates").select("id, template_name, created_at, issuer_name, event_name, notes, url").execute()
+
+	if not response.data:
+		return []
+
+	return response.data
+
+def get_all_certificates(template_id: int | None = None, recipient_email: str | None = None) -> list[dict]:
+	client = get_supabase_client()
+	query = client.table("certificates").select("id, certificate_id, created_at, template_id, recipient_name, recipient_email, issuer_name")
+
+	if template_id is not None:
+		query = query.eq("template_id", template_id)
+
+	if recipient_email is not None:
+		query = query.eq("recipient_email", recipient_email)
+
+	response = query.execute()
+
+	if not response.data:
+		return []
+
+	return response.data

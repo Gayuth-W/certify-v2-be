@@ -177,6 +177,52 @@ collection:
             send: true
             store: true
           rebuildPath: true
+      - url: "{{ _.url }}/admin/certificates"
+        name: get all certificates
+        meta:
+          id: req_9d27d17452c64d8d9099cbed49605bca
+          created: 1775158075592
+          modified: 1775105785301
+          isPrivate: false
+          description: ""
+          sortKey: -1775101911862
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.url }}/admin/templates"
+        name: get all templates
+        meta:
+          id: req_de35364c7a6e45d2b4fb9124221266b2
+          created: 1775258072592
+          modified: 1775102785201
+          isPrivate: false
+          description: ""
+          sortKey: -1775101923862
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:
