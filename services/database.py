@@ -85,7 +85,7 @@ def get_template_by_id(template_id: int) -> dict:
 
 def get_all_templates() -> list[dict]:
 	client = get_supabase_client()
-	response = client.table("templates").select("*").execute()
+	response = client.table("templates").select("id, template_name, created_at, issuer_name, event_name, notes, url").execute()
 
 	if not response.data:
 		return []
