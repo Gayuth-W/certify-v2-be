@@ -26,3 +26,9 @@ class AddCertificateRequestModel(BaseModel):
 	issuer_name: str | None = None
 	course_name: str | None = None
 	notes: str | None = None
+
+
+class RevokeCertificateRequestModel(BaseModel):
+	revoked: bool
+	reason: str | None = None
+	revoked_by: str | None = None

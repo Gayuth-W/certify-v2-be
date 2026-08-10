@@ -1,6 +1,15 @@
-from models.models import AddCertificateRequestModel, AddTemplateRequestModel
+import logging
+from datetime import datetime, timezone
+
+from models.models import (
+	AddCertificateRequestModel,
+	AddTemplateRequestModel,
+	RevokeCertificateRequestModel,
+)
 from services.supabase_client import get_supabase_client
 from utils.certificate_id import generate_certificate_id
+
+audit_logger = logging.getLogger("certify.audit")
 
 
 def add_template(url: str, request: AddTemplateRequestModel) -> dict:
@@ -83,6 +92,51 @@ def get_template_by_id(template_id: int) -> dict:
 	return response.data[0]
 
 
+def revoke_certificate(certificate_id: str, request: RevokeCertificateRequestModel) -> dict:
+	client = get_supabase_client()
+
+	# Raises ValueError if the certificate doesn't exist, mirroring the 404 behavior
+	# of the other lookups in this module.
+	get_certificate_by_certificate_id(certificate_id)
+
+	if request.revoked:
+		payload = {
+			"revoked": True,
+			"revoked_at": datetime.now(timezone.utc).isoformat(),
+			"revoked_by": request.revoked_by,
+			"revoke_reason": request.reason,
+		}
+	else:
+		payload = {
+			"revoked": False,
+			"revoked_at": None,
+			"revoked_by": None,
+			"revoke_reason": None,
+		}
+
+	response = (
+		client.table("certificates")
+		.update(payload)
+		.eq("certificate_id", certificate_id)
+		.execute()
+	)
+
+	if not response.data:
+		raise ValueError("Failed to update certificate record")
+
+	audit_logger.info(
+		"certificate.revoke",
+		extra={
+			"certificate_id": certificate_id,
+			"revoked": request.revoked,
+			"revoked_by": request.revoked_by,
+			"reason": request.reason,
+		},
+	)
+
+	return response.data[0]
+
+
 def get_all_templates() -> list[dict]:
 	client = get_supabase_client()
 	response = client.table("templates").select("id, template_name, created_at, issuer_name, event_name, notes, url").execute()
@@ -94,7 +148,7 @@ def get_all_templates() -> list[dict]:
 
 def get_all_certificates(template_id: int | None = None, recipient_email: str | None = None) -> list[dict]:
 	client = get_supabase_client()
-	query = client.table("certificates").select("id, certificate_id, created_at, template_id, recipient_name, recipient_email, issuer_name")
+	query = client.table("certificates").select("id, certificate_id, created_at, template_id, recipient_name, recipient_email, issuer_name, revoked, revoked_at, revoked_by, revoke_reason")
 
 	if template_id is not None:
 		query = query.eq("template_id", template_id)

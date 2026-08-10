@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, File, Form, UploadFile, HTTPException, status
-from models.models import AddCertificateRequestModel, AddTemplateRequestModel
-from services.database import add_certificate, add_template, get_all_templates, get_all_certificates
+from models.models import AddCertificateRequestModel, AddTemplateRequestModel, RevokeCertificateRequestModel
+from services.database import add_certificate, add_template, get_all_templates, get_all_certificates, revoke_certificate
 from services.storage import upload_template
 
 router = APIRouter(
@@ -82,4 +82,17 @@ def admin_get_certificates(
         "ok": True,
         "message": "Certificates fetched successfully",
         "certificates": certificates,
+    }
+
+@router.post("/certificates/{certificate_id}/revoke")
+def admin_revoke_certificate(certificate_id: str, request: RevokeCertificateRequestModel):
+    try:
+        certificate = revoke_certificate(certificate_id, request)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+
+    return {
+        "ok": True,
+        "message": "Certificate revoked successfully" if request.revoked else "Certificate revocation reverted",
+        "certificate": certificate,
     }
