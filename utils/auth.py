@@ -43,7 +43,7 @@ async def verify_admin(authorization: str = Header(None)) -> None:
 
     user = resp.json().get("data", {})
     roles = user.get("roles", [])
-    if "admin" not in roles:
+    if "certify-admin" not in roles:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin role required",
