@@ -1,8 +1,9 @@
 from typing import Annotated
-from fastapi import APIRouter, File, Form, UploadFile, HTTPException, status
+from fastapi import APIRouter, Depends, File, Form, UploadFile, HTTPException, status
 from models.models import AddCertificateRequestModel, AddTemplateRequestModel, RevokeCertificateRequestModel
 from services.database import add_certificate, add_template, get_all_templates, get_all_certificates, revoke_certificate
 from services.storage import upload_template
+from utils.auth import require_admin_key
 
 router = APIRouter(
     prefix="/admin",
@@ -84,7 +85,7 @@ def admin_get_certificates(
         "certificates": certificates,
     }
 
-@router.post("/certificates/{certificate_id}/revoke")
+@router.post("/certificates/{certificate_id}/revoke", dependencies=[Depends(require_admin_key)])
 def admin_revoke_certificate(certificate_id: str, request: RevokeCertificateRequestModel):
     try:
         certificate = revoke_certificate(certificate_id, request)
