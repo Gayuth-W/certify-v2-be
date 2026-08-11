@@ -1,12 +1,14 @@
 from typing import Annotated
-from fastapi import APIRouter, File, Form, UploadFile, HTTPException, status
+from fastapi import APIRouter,Depends, File, Form, UploadFile, HTTPException, status
 from models.models import AddCertificateRequestModel, AddTemplateRequestModel
 from services.database import add_certificate, add_template, get_all_templates, get_all_certificates
 from services.storage import upload_template
+from utils.auth import verify_admin
 
 router = APIRouter(
     prefix="/admin",
-    tags=["admin"]
+    tags=["admin"],
+    dependencies=[Depends(verify_admin)]
 )
 
 
