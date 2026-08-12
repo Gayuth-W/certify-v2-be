@@ -11,11 +11,22 @@ router = APIRouter(
 
 @router.get(
     "/{certificate_id}/preview",
-    responses={400: {"description": "Certificate preview generation failed"}},
+    responses={
+        400: {"description": "Certificate preview generation failed"},
+        404: {"description": "Certificate not found"},
+        410: {"description": "Certificate has been revoked"},
+    },
 )
 def preview_certificate(certificate_id: str):
     try:
         certificate = get_certificate_by_certificate_id(certificate_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    if certificate.get("revoked"):
+        raise HTTPException(status_code=410, detail="Certificate has been revoked")
+
+    try:
         template = get_template_by_id(certificate["template_id"])
 
         if not template.get("url"):
