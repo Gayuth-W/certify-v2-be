@@ -1,5 +1,6 @@
 from fastapi import UploadFile
 from pydantic import BaseModel, Field
+from datetime import datetime
 
 
 class AddTemplateRequestModel(BaseModel):
@@ -32,3 +33,30 @@ class RevokeCertificateRequestModel(BaseModel):
 	revoked: bool
 	reason: str | None = None
 	revoked_by: str | None = None
+
+
+class BadgeTemplate(BaseModel):
+	id: int
+	created_at: str | datetime
+	url: str
+	template_name: str
+	template_for: str | None = None
+	event_name: str | None = None
+	issuer_name: str | None = None
+	notes: str | None = None
+
+
+class Badge(BaseModel):
+	id: int
+	created_at: str | datetime
+	template_id: int
+	recipient_name: str
+	recipient_email: str
+	event_name: str | None = None
+	event_date: str | None = None
+	event_location: str | None = None
+	issuer_name: str | None = None
+	course_name: str | None = None
+	issue_reason: str | None = None
+	notes: str | None = None
+	badge_id: str | None = None
