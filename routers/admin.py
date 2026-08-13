@@ -1,8 +1,8 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, File, Form, UploadFile, HTTPException, status
-from models.models import AddCertificateRequestModel, AddTemplateRequestModel, RevokeCertificateRequestModel
-from services.database import add_certificate, add_template, get_all_templates, get_all_certificates, revoke_certificate
-from services.storage import upload_template
+from models.models import AddCertificateRequestModel, AddTemplateRequestModel, RevokeCertificateRequestModel, AddBadgeTemplateRequestModel
+from services.database import add_badge_template, add_certificate, add_template, get_all_templates, get_all_certificates, revoke_certificate
+from services.storage import upload_template, upload_badge
 from utils.auth import verify_admin
 
 router = APIRouter(
@@ -97,4 +97,30 @@ def admin_revoke_certificate(certificate_id: str, request: RevokeCertificateRequ
         "ok": True,
         "message": "Certificate revoked successfully" if request.revoked else "Certificate revocation reverted",
         "certificate": certificate,
+    }
+
+@router.post("/add/badge-template")
+async def admin_add_badge_template(
+    template: Annotated[UploadFile, File(...)],
+    template_name: Annotated[str, Form(...)],
+    template_for: Annotated[str | None, Form()] = None,
+    event_name: Annotated[str | None, Form()] = None,
+    issuer_name: Annotated[str | None, Form()] = None,
+    notes: Annotated[str | None, Form()] = None,
+):
+    request_data = AddBadgeTemplateRequestModel(
+        template_name=template_name,
+        template_for=template_for,
+        event_name=event_name,
+        issuer_name=issuer_name,
+        notes=notes,
+    )
+
+    upload_result = await upload_badge(template)
+    db_record = add_badge_template(upload_result["public_url"], request_data)
+
+    return {
+        "ok": True, 
+        "message": "Badge template added successfully", 
+        "badge_template": db_record
     }
