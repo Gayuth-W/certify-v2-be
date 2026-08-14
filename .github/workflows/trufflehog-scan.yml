@@ -1,0 +1,67 @@
+name: TruffleHog Secret Scan
+
+on:
+    push:
+    pull_request:
+
+jobs:
+    trufflehog:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: write
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Run TruffleHog Secret Scan
+              uses: trufflesecurity/trufflehog@main
+              with:
+                  path: ./
+                  base: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+                  head: ${{ github.event.pull_request.head.sha || github.sha || '' }}
+                  extra_args: --no-verification
+
+            - name: Block push - secrets detected
+              if: failure()
+              run: |
+                  echo "TruffleHog detected secrets in this commit!"
+                  echo "Push/merge is BLOCKED until secrets are removed."
+                  echo ""
+                  echo "Steps to fix:"
+                  echo "  1. Remove the secret from your code"
+                  echo "  2. Rotate/revoke the exposed secret immediately"
+                  echo "  3. Use environment variables or a secrets manager instead"
+                  exit 1
+
+            - name: Comment on PR if secrets are found
+              if: failure() && github.event_name == 'pull_request'
+              uses: actions/github-script@v7
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  script: |
+                      if (context.issue.number) {
+                          github.rest.issues.createComment({
+                              issue_number: context.issue.number,
+                              owner: context.repo.owner,
+                              repo: context.repo.repo,
+                              body: [
+                                  "## Security Alert: Secrets Detected!",
+                                  "",
+                                  "TruffleHog has detected potential secrets or API keys in this pull request.",
+                                  "",
+                                  "This PR is BLOCKED from merging until secrets are removed.",
+                                  "",
+                                  "### Steps to Fix:",
+                                  "1. Remove the secret from your code immediately",
+                                  "2. Rotate/Revoke the exposed secret - assume it is compromised",
+                                  "3. Use environment variables or a secrets manager (e.g. GitHub Secrets) instead",
+                                  "",
+                                  "Even if you remove it from the latest commit, it may still be in git history.",
+                                  "Consider using git filter-repo or BFG Repo Cleaner to purge it from history."
+                              ].join("\n")
+                          });
+                      }
