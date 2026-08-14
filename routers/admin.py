@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, File, Form, UploadFile, HTTPException, status
 from models.models import AddCertificateRequestModel, AddTemplateRequestModel, RevokeCertificateRequestModel, AddBadgeTemplateRequestModel
 from services.database import add_badge_template, add_certificate, add_template, get_all_templates, get_all_certificates, revoke_certificate
-from services.storage import upload_template, upload_badge
+from services.storage import upload_template, upload_badge, get_all_badge_templates
 from utils.auth import verify_admin
 
 router = APIRouter(
@@ -85,6 +85,16 @@ def admin_get_certificates(
         "message": "Certificates fetched successfully",
         "certificates": certificates,
     }
+
+@router.get("/badge-templates")
+def get_all_badges_templates() -> dict:
+    badge_templates = get_all_badge_templates()
+    return {
+        "ok": True,
+        "message": "Badge templates fetched successfully",
+        "badge_templates": badge_templates
+    }
+
 
 @router.post("/certificates/{certificate_id}/revoke")
 def admin_revoke_certificate(certificate_id: str, request: RevokeCertificateRequestModel):

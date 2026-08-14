@@ -147,6 +147,16 @@ def get_all_templates() -> list[dict]:
 
 	return response.data
 
+def get_all_badge_templates() -> list[dict]:
+	client = get_supabase_client()
+	response = client.table("badge_templates").select("id, created_at, url, template_name, template_for, event_name, issuer_name, notes").execute()
+
+	if not response.data:
+		return []
+
+	return response.data
+
+
 def get_all_certificates(template_id: int | None = None, recipient_email: str | None = None) -> list[dict]:
 	client = get_supabase_client()
 	query = client.table("certificates").select("id, certificate_id, created_at, template_id, recipient_name, recipient_email, issuer_name, revoked, revoked_at, revoked_by, revoke_reason")
