@@ -172,3 +172,16 @@ def get_all_certificates(template_id: int | None = None, recipient_email: str | 
 		return []
 
 	return response.data
+
+def get_badge_by_id(badge_id: str) -> dict:
+  client = get_supabase_client()
+  response = client.table("badges").select("id, created_at, template_id, recipient_name, recipient_email, event_name, event_date, event_location, issuer_name, course_name, issue_reason, notes, badge_id").eq("badge_id", badge_id).limit(1).execute()
+  
+  if not response.data:
+    raise ValueError("Badge not found")
+  
+  badge = response.data[0]
+  template_response = client.table("badge_templates").select("id, template_name, template_for, url").eq("id", badge["template_id"]).limit(1).execute()
+  badge["badge_template"] = template_response.data[0] if template_response.data else None
+  
+  return badge
