@@ -5,6 +5,7 @@ from models.models import (
 	AddCertificateRequestModel,
 	AddTemplateRequestModel,
 	RevokeCertificateRequestModel,
+	AddBadgeRequestModel
 )
 from services.supabase_client import get_supabase_client
 from utils.certificate_id import generate_certificate_id
@@ -172,3 +173,42 @@ def get_all_certificates(template_id: int | None = None, recipient_email: str | 
 		return []
 
 	return response.data
+
+def add_badge(request: AddBadgeRequestModel) -> dict:
+    client = get_supabase_client()
+
+    template_response = (
+        client.table("badge_templates")
+        .select("id")
+        .eq("id", request.template_id)
+        .limit(1)
+        .execute()
+    )
+
+    if not template_response.data:
+        raise ValueError("Template not found")
+
+    payload = {
+        "template_id": request.template_id,
+        "recipient_name": request.recipient_name,
+        "recipient_email": request.recipient_email,
+        "event_name": request.event_name,
+        "event_date": request.event_date,
+        "event_location": request.event_location,
+        "issuer_name": request.issuer_name,
+        "course_name": request.course_name,
+        "issue_reason": request.issue_reason,
+        "notes": request.notes,
+        "badge_id": request.badge_id,
+    }
+
+    response = (
+        client.table("badges")
+        .insert(payload)
+        .execute()
+    )
+
+    if not response.data:
+        raise ValueError("Failed to create badge")
+
+    return response.data[0]
