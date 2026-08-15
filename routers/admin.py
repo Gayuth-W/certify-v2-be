@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, File, Form, UploadFile, HTTPException, status
-from models.models import AddCertificateRequestModel, AddTemplateRequestModel, RevokeCertificateRequestModel
-from services.database import add_certificate, add_template, get_all_templates, get_all_certificates, revoke_certificate, get_all_badge_templates
+from models.models import AddCertificateRequestModel, AddTemplateRequestModel, RevokeCertificateRequestModel, AddBadgeRequestModel
+from services.database import add_certificate, add_template, get_all_templates, get_all_certificates, revoke_certificate, get_all_badge_templates,add_badge
 from services.storage import upload_template
 from utils.auth import verify_admin
 
@@ -95,7 +95,6 @@ def get_all_badges_templates() -> dict:
         "badge_templates": badge_templates
     }
 
-
 @router.post("/certificates/{certificate_id}/revoke")
 def admin_revoke_certificate(certificate_id: str, request: RevokeCertificateRequestModel):
     try:
@@ -108,3 +107,35 @@ def admin_revoke_certificate(certificate_id: str, request: RevokeCertificateRequ
         "message": "Certificate revoked successfully" if request.revoked else "Certificate revocation reverted",
         "certificate": certificate,
     }
+
+
+@router.post("/add/badge")
+def create_badge(request: AddBadgeRequestModel):
+
+    try:
+        badge = add_badge(request)
+
+        return {
+            "ok": True,
+            "message": "Badge issued successfully",
+            "badge": badge
+        }
+
+    except ValueError as e:
+
+        if str(e) == "Template not found":
+            raise HTTPException(
+                status_code=404,
+                detail="Template not found"
+            )
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail="Internal server error"
+        )
