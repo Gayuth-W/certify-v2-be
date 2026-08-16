@@ -60,3 +60,11 @@ class Badge(BaseModel):
 	issue_reason: str | None = None
 	notes: str | None = None
 	badge_id: str | None = None
+
+
+class AddBadgeTemplateRequestModel(BaseModel):
+	template_name: str
+	template_for: str | None = None
+	event_name: str | None = None
+	issuer_name: str | None = None
+	notes: str | None = None	
