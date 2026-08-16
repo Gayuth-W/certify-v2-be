@@ -5,6 +5,7 @@ from models.models import (
 	AddCertificateRequestModel,
 	AddTemplateRequestModel,
 	RevokeCertificateRequestModel,
+	AddBadgeRequestModel
 	AddBadgeTemplateRequestModel,
 )
 from services.supabase_client import get_supabase_client
@@ -189,5 +190,41 @@ def add_badge_template(url: str, request: AddBadgeTemplateRequestModel) -> dict:
 	response = client.table("badge_templates").insert(payload).execute()
 	if not response.data:
 		raise ValueError("Failed to insert badge template record")
+
+	return response.data[0]
+
+
+def add_badge(request: AddBadgeRequestModel) -> dict:
+	client = get_supabase_client()
+
+	template_resp = (
+		client.table("badge_templates")
+		.select("id")
+		.eq("id", request.template_id)
+		.limit(1)
+		.execute()
+	)
+	if not template_resp.data:
+		raise ValueError(f"Badge template with id={request.template_id} not found")
+
+	badge_id = request.badge_id or generate_badge_id()
+
+	payload = {
+		"badge_id":        badge_id,
+		"template_id":     request.template_id,
+		"recipient_name":  request.recipient_name,
+		"recipient_email": request.recipient_email,
+		"event_name":      request.event_name,
+		"event_date":      request.event_date,
+		"event_location":  request.event_location,
+		"issuer_name":     request.issuer_name,
+		"course_name":     request.course_name,
+		"issue_reason":    request.issue_reason,
+		"notes":           request.notes,
+	}
+
+	response = client.table("badges").insert(payload).execute()
+	if not response.data:
+		raise ValueError("Failed to insert badge record")
 
 	return response.data[0]
